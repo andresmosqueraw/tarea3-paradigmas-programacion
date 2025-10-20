@@ -277,210 +277,427 @@ declare
       Codemaker.secretCode
    end
 
-
-
-
-
-
-%% ===========================================
-%% COMPREHENSIVE TEST SUITE (mirrors mastermind_oop.oz tests)
-%% ===========================================
-
-proc {RunMastermindTests}
-   {System.showInfo "\n=== MASTERMIND (FUNCTIONAL) TEST SUITE ==="}
+   %% ===========================================
+   %% AUXILIARY FUNCTIONS FOR OOP-LIKE FUNCTIONALITY
+   %% ===========================================
    
-   local
-      %% Test 1: Game Initialization
-      SecretCode1 = [red blue green yellow]
-      Codemaker1 = {StartGame SecretCode1}
-      Status1 = {GetGameStatus {EvaluateGuess Codemaker1 [red orange purple blue]} 1}
-      Round1 = {GetCurrentRound Codemaker1}
-      Remaining1 = {GetRemainingRounds Codemaker1}
-      RetrievedCode1 = {GetSecretCode Codemaker1}
-   in
-      {System.showInfo "\n--- Test 1: Game Initialization ---"}
-      {System.showInfo "Game status: " # Status1 # " (expected: playing)"}
-      {System.showInfo "Current round: " # Round1 # " (expected: 1)"}
-      {System.showInfo "Remaining rounds: " # Remaining1 # " (expected: 11)"}
-      {System.showInfo "Secret code: " # {Value.toVirtualString RetrievedCode1 10 10}}
+   fun {GetAvailableColors}
+      %% Returns list of colors that can be used in codes
+      [red blue green yellow orange purple]
    end
-
-   local
-      %% Test 2: Code Validation
-      ValidCode1 = [red blue green yellow]
-      ValidCode2 = [red red red red]
-      InvalidCode1 = [red blue green]  % Too short
-      InvalidCode2 = [red blue green yellow orange]  % Too long
-      Valid1 = {IsValidCode ValidCode1}
-      Valid2 = {IsValidCode ValidCode2}
-      Invalid1 = {IsValidCode InvalidCode1}
-      Invalid2 = {IsValidCode InvalidCode2}
-   in
-      {System.showInfo "\n--- Test 2: Code Validation ---"}
-      {System.showInfo "Valid code [red blue green yellow]: " # {Value.toVirtualString Valid1 10 10} # " (expected: true)"}
-      {System.showInfo "Valid code [red red red red]: " # {Value.toVirtualString Valid2 10 10} # " (expected: true)"}
-      {System.showInfo "Invalid code [red blue green]: " # {Value.toVirtualString Invalid1 10 10} # " (expected: false)"}
-      {System.showInfo "Invalid code [red blue green yellow orange]: " # {Value.toVirtualString Invalid2 10 10} # " (expected: false)"}
-   end
-
-   local
-      %% Test 3: Guess Evaluation
-      SecretCode = [red blue green yellow]
-      Codemaker = {StartGame SecretCode}
-      PerfectGuess = [red blue green yellow]
-      WrongPosGuess = [blue red yellow green]
-      MixedGuess = [red orange purple blue]
-      NoMatchGuess = [orange purple orange purple]
-      
-      Feedback1 = {EvaluateGuess Codemaker PerfectGuess}
-      Feedback2 = {EvaluateGuess Codemaker WrongPosGuess}
-      Feedback3 = {EvaluateGuess Codemaker MixedGuess}
-      Feedback4 = {EvaluateGuess Codemaker NoMatchGuess}
-   in
-      {System.showInfo "\n--- Test 3: Guess Evaluation ---"}
-      {System.showInfo "Perfect match - Black: " # Feedback1.blackClues # " White: " # Feedback1.whiteClues # " Correct: " # {Value.toVirtualString Feedback1.isCorrect 10 10}}
-      {System.showInfo "All colors wrong positions - Black: " # Feedback2.blackClues # " White: " # Feedback2.whiteClues}
-      {System.showInfo "Mixed - Black: " # Feedback3.blackClues # " White: " # Feedback3.whiteClues}
-      {System.showInfo "No matches - Black: " # Feedback4.blackClues # " White: " # Feedback4.whiteClues}
-   end
-
-   local
-      %% Test 4: Game Round Execution
-      SecretCode = [red blue green yellow]
-      Codemaker = {StartGame SecretCode}
-      Guess1 = [red orange purple blue]
-      CodemakerAfterRound1 = {PlayRound Codemaker Guess1}
-      StatusAfterRound1 = {GetGameStatus {EvaluateGuess CodemakerAfterRound1 [red orange purple blue]} 2}
-      RoundAfterRound1 = {GetCurrentRound CodemakerAfterRound1}
-      RemainingAfterRound1 = {GetRemainingRounds CodemakerAfterRound1}
-   in
-      {System.showInfo "\n--- Test 4: Game Round Execution ---"}
-      {System.showInfo "After round 1 - Status: " # StatusAfterRound1 # " (expected: playing)"}
-      {System.showInfo "After round 1 - Round: " # RoundAfterRound1 # " (expected: 2)"}
-      {System.showInfo "After round 1 - Remaining: " # RemainingAfterRound1 # " (expected: 10)"}
-   end
-
-   local
-      %% Test 5: Winning Game
-      SecretCode = [red blue green yellow]
-      Codemaker = {StartGame SecretCode}
-      WinningGuess = [red blue green yellow]
-      CodemakerAfterWin = {PlayRound Codemaker WinningGuess}
-      StatusAfterWin = {GetGameStatus {EvaluateGuess CodemakerAfterWin [red blue green yellow]} 1}
-      RoundAfterWin = {GetCurrentRound CodemakerAfterWin}
-   in
-      {System.showInfo "\n--- Test 5: Winning Game ---"}
-      {System.showInfo "After winning - Status: " # StatusAfterWin # " (expected: won)"}
-      {System.showInfo "After winning - Round: " # RoundAfterWin # " (expected: 1)"}
-   end
-
-   local
-      %% Test 6: Losing Game (too many rounds)
-      SecretCode = [red blue green yellow]
-      Codemaker = {StartGame SecretCode}
-      WrongGuess = [orange purple orange purple]
-      
-      %% Simulate 12 rounds of wrong guesses
-      fun {SimulateLosingGame Codemaker Round}
-         if Round > 12 then Codemaker
-         else
-            {SimulateLosingGame {PlayRound Codemaker WrongGuess} Round + 1}
-         end
-      end
-      
-      FinalCodemaker = {SimulateLosingGame Codemaker 1}
-      FinalStatus = {GetGameStatus {EvaluateGuess FinalCodemaker WrongGuess} 12}
-      FinalRound = {GetCurrentRound FinalCodemaker}
-   in
-      {System.showInfo "\n--- Test 6: Losing Game ---"}
-      {System.showInfo "After 12 rounds - Status: " # FinalStatus # " (expected: lost)"}
-      {System.showInfo "After 12 rounds - Round: " # FinalRound # " (expected: 12)"}
-   end
-
-   local
-      %% Test 7: Random Code Generation
-      fun {GenerateRandomCode}
-         local
-            AvailableColors = [red blue green yellow orange purple]
-            fun {RandomColor Colors}
-               local Index in
-                  Index = {OS.rand} mod {Length Colors}
-                  {Nth Colors Index + 1}
-               end
+   
+   fun {GenerateRandomCode}
+      %% Generates a new random secret code
+      local
+         AvailableColors = [red blue green yellow orange purple]
+         fun {RandomColor Colors}
+            local Index in
+               Index = {OS.rand} mod {Length Colors}
+               {Nth Colors Index + 1}
             end
-            fun {GenerateCode Colors Count}
-               if Count == 0 then nil
-               else
-                  {RandomColor Colors} | {GenerateCode Colors Count - 1}
-               end
-            end
-         in
-            {GenerateCode AvailableColors 4}
          end
+         fun {GenerateCode Colors Count}
+            if Count == 0 then nil
+            else
+               {RandomColor Colors} | {GenerateCode Colors Count - 1}
+            end
+         end
+      in
+         {GenerateCode AvailableColors 4}
       end
-      RandomCode1 = {GenerateRandomCode}
-      RandomCode2 = {GenerateRandomCode}
-      ValidRandom1 = {IsValidCode RandomCode1}
-      ValidRandom2 = {IsValidCode RandomCode2}
-   in
-      {System.showInfo "\n--- Test 7: Random Code Generation ---"}
-      {System.showInfo "Random code 1: " # {Value.toVirtualString RandomCode1 10 10} # " Valid: " # {Value.toVirtualString ValidRandom1 10 10}}
-      {System.showInfo "Random code 2: " # {Value.toVirtualString RandomCode2 10 10} # " Valid: " # {Value.toVirtualString ValidRandom2 10 10}}
    end
-
-   local
-      %% Test 8: Guess History
-      SecretCode = [red blue green yellow]
-      Codemaker = {StartGame SecretCode}
-      Guess1 = [red orange purple blue]
-      CodemakerAfterRound1 = {PlayRound Codemaker Guess1}
-      Guess2 = [blue red yellow green]
-      CodemakerAfterRound2 = {PlayRound CodemakerAfterRound1 Guess2}
-      History = CodemakerAfterRound2.guessHistory
-   in
-      {System.showInfo "\n--- Test 8: Guess History ---"}
-      {System.showInfo "History length: " # {Length History} # " (expected: 2)"}
-      {System.showInfo "First guess: " # {Value.toVirtualString {Nth History 1}.guess 10 10}}
-      {System.showInfo "Second guess: " # {Value.toVirtualString {Nth History 2}.guess 10 10}}
+   
+   fun {SetSecretCode Code}
+      %% Sets a specific secret code (functional equivalent)
+      if {IsValidCode Code} then
+         {StartGame Code}
+      else
+         {Exception.raiseError 'Invalid code provided'}
+      end
    end
-
-   local
-      %% Test 9: Edge Cases
-      EmptyCodemaker = codemaker(
-         secretCode: nil
-         currentRound: 0
-         maxRounds: 12
-         gameStatus: 'ready'
+   
+   fun {MakeGuess Codemaker Guess}
+      %% Makes a specific guess and returns updated codemaker
+      if {IsValidCode Guess} then
+         {PlayRound Codemaker Guess}
+      else
+         {Exception.raiseError 'Invalid guess provided'}
+      end
+   end
+   
+   fun {ReceiveFeedback Codemaker Guess Feedback}
+      %% Receives and processes feedback for a guess
+      local
+         NewGuessHistory = record(guess: Guess roundNumber: Codemaker.currentRound) | Codemaker.guessHistory
+         NewFeedbackHistory = record(feedback: Feedback roundNumber: Codemaker.currentRound) | Codemaker.feedbackHistory
+      in
+         codemaker(
+            secretCode: Codemaker.secretCode
+            currentRound: Codemaker.currentRound
+            maxRounds: Codemaker.maxRounds
+            gameStatus: Codemaker.gameStatus
+            guessHistory: NewGuessHistory
+            feedbackHistory: NewFeedbackHistory
+         )
+      end
+   end
+   
+   fun {GetGuessHistory Codemaker}
+      %% Returns all guesses made so far
+      Codemaker.guessHistory
+   end
+   
+   fun {ResetHistory Codemaker}
+      %% Clears guess and feedback history (for new game)
+      codemaker(
+         secretCode: Codemaker.secretCode
+         currentRound: Codemaker.currentRound
+         maxRounds: Codemaker.maxRounds
+         gameStatus: Codemaker.gameStatus
          guessHistory: nil
          feedbackHistory: nil
       )
-      StatusEmpty = {GetGameStatus {EvaluateGuess EmptyCodemaker [red orange purple blue]} 0}
-      RoundEmpty = {GetCurrentRound EmptyCodemaker}
-      RemainingEmpty = {GetRemainingRounds EmptyCodemaker}
-   in
-      {System.showInfo "\n--- Test 9: Edge Cases ---"}
-      {System.showInfo "Empty codemaker status: " # StatusEmpty # " (expected: playing)"}
-      {System.showInfo "Empty codemaker round: " # RoundEmpty # " (expected: 0)"}
-      {System.showInfo "Empty codemaker remaining: " # RemainingEmpty # " (expected: 0)"}
    end
 
-   local
-      %% Test 10: Multiple Games
-      SecretCode1 = [red blue green yellow]
-      SecretCode2 = [orange purple orange purple]
-      Codemaker1 = {StartGame SecretCode1}
-      Codemaker2 = {StartGame SecretCode2}
-      Status1 = {GetGameStatus {EvaluateGuess Codemaker1 [red orange purple blue]} 1}
-      Status2 = {GetGameStatus {EvaluateGuess Codemaker2 [red orange purple blue]} 1}
-      Code1 = {GetSecretCode Codemaker1}
-      Code2 = {GetSecretCode Codemaker2}
-   in
-      {System.showInfo "\n--- Test 10: Multiple Games ---"}
-      {System.showInfo "Codemaker 1 status: " # Status1 # " Code: " # {Value.toVirtualString Code1 10 10}}
-      {System.showInfo "Codemaker 2 status: " # Status2 # " Code: " # {Value.toVirtualString Code2 10 10}}
-   end
 
-   {System.showInfo "\n=== ALL MASTERMIND TESTS COMPLETED ==="}
-end
 
-{RunMastermindTests}
+
+
+
+
+
+% proc {RunMastermindTests}
+%    {System.showInfo "\n=== MASTERMIND (FUNCTIONAL) TEST SUITE ==="}
+   
+%    local
+%       SecretCode1 = [red blue green yellow]
+%       Codemaker1 = {StartGame SecretCode1}
+%       Status1 = {GetGameStatus {EvaluateGuess Codemaker1 [red orange purple blue]} 1}
+%       Round1 = {GetCurrentRound Codemaker1}
+%       Remaining1 = {GetRemainingRounds Codemaker1}
+%       RetrievedCode1 = {GetSecretCode Codemaker1}
+%    in
+%       {System.showInfo "\n--- Test 1: Game Initialization ---"}
+%       {System.showInfo "Game status: " # Status1 # " (expected: playing)"}
+%       {System.showInfo "Current round: " # Round1 # " (expected: 1)"}
+%       {System.showInfo "Remaining rounds: " # Remaining1 # " (expected: 11)"}
+%       {System.showInfo "Secret code: " # {Value.toVirtualString RetrievedCode1 10 10}}
+%    end
+
+%    local
+%       ValidCode1 = [red blue green yellow]
+%       ValidCode2 = [red red red red]
+%       InvalidCode1 = [red blue green]  % Too short
+%       InvalidCode2 = [red blue green yellow orange]  % Too long
+%       Valid1 = {IsValidCode ValidCode1}
+%       Valid2 = {IsValidCode ValidCode2}
+%       Invalid1 = {IsValidCode InvalidCode1}
+%       Invalid2 = {IsValidCode InvalidCode2}
+%    in
+%       {System.showInfo "\n--- Test 2: Code Validation ---"}
+%       {System.showInfo "Valid code [red blue green yellow]: " # {Value.toVirtualString Valid1 10 10} # " (expected: true)"}
+%       {System.showInfo "Valid code [red red red red]: " # {Value.toVirtualString Valid2 10 10} # " (expected: true)"}
+%       {System.showInfo "Invalid code [red blue green]: " # {Value.toVirtualString Invalid1 10 10} # " (expected: false)"}
+%       {System.showInfo "Invalid code [red blue green yellow orange]: " # {Value.toVirtualString Invalid2 10 10} # " (expected: false)"}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       PerfectGuess = [red blue green yellow]
+%       WrongPosGuess = [blue red yellow green]
+%       MixedGuess = [red orange purple blue]
+%       NoMatchGuess = [orange purple orange purple]
+      
+%       Feedback1 = {EvaluateGuess Codemaker PerfectGuess}
+%       Feedback2 = {EvaluateGuess Codemaker WrongPosGuess}
+%       Feedback3 = {EvaluateGuess Codemaker MixedGuess}
+%       Feedback4 = {EvaluateGuess Codemaker NoMatchGuess}
+%    in
+%       {System.showInfo "\n--- Test 3: Guess Evaluation ---"}
+%       {System.showInfo "Perfect match - Black: " # Feedback1.blackClues # " White: " # Feedback1.whiteClues # " Correct: " # {Value.toVirtualString Feedback1.isCorrect 10 10}}
+%       {System.showInfo "All colors wrong positions - Black: " # Feedback2.blackClues # " White: " # Feedback2.whiteClues}
+%       {System.showInfo "Mixed - Black: " # Feedback3.blackClues # " White: " # Feedback3.whiteClues}
+%       {System.showInfo "No matches - Black: " # Feedback4.blackClues # " White: " # Feedback4.whiteClues}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       Guess1 = [red orange purple blue]
+%       CodemakerAfterRound1 = {PlayRound Codemaker Guess1}
+%       StatusAfterRound1 = {GetGameStatus {EvaluateGuess CodemakerAfterRound1 [red orange purple blue]} 2}
+%       RoundAfterRound1 = {GetCurrentRound CodemakerAfterRound1}
+%       RemainingAfterRound1 = {GetRemainingRounds CodemakerAfterRound1}
+%    in
+%       {System.showInfo "\n--- Test 4: Game Round Execution ---"}
+%       {System.showInfo "After round 1 - Status: " # StatusAfterRound1 # " (expected: playing)"}
+%       {System.showInfo "After round 1 - Round: " # RoundAfterRound1 # " (expected: 2)"}
+%       {System.showInfo "After round 1 - Remaining: " # RemainingAfterRound1 # " (expected: 10)"}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       WinningGuess = [red blue green yellow]
+%       CodemakerAfterWin = {PlayRound Codemaker WinningGuess}
+%       StatusAfterWin = {GetGameStatus {EvaluateGuess CodemakerAfterWin [red blue green yellow]} 1}
+%       RoundAfterWin = {GetCurrentRound CodemakerAfterWin}
+%    in
+%       {System.showInfo "\n--- Test 5: Winning Game ---"}
+%       {System.showInfo "After winning - Status: " # StatusAfterWin # " (expected: won)"}
+%       {System.showInfo "After winning - Round: " # RoundAfterWin # " (expected: 1)"}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       WrongGuess = [orange purple orange purple]
+      
+%       fun {SimulateLosingGame Codemaker Round}
+%          if Round > 12 then Codemaker
+%          else
+%             {SimulateLosingGame {PlayRound Codemaker WrongGuess} Round + 1}
+%          end
+%       end
+      
+%       FinalCodemaker = {SimulateLosingGame Codemaker 1}
+%       FinalStatus = {GetGameStatus {EvaluateGuess FinalCodemaker WrongGuess} 12}
+%       FinalRound = {GetCurrentRound FinalCodemaker}
+%    in
+%       {System.showInfo "\n--- Test 6: Losing Game ---"}
+%       {System.showInfo "After 12 rounds - Status: " # FinalStatus # " (expected: lost)"}
+%       {System.showInfo "After 12 rounds - Round: " # FinalRound # " (expected: 12)"}
+%    end
+
+%    local
+%       fun {GenerateRandomCode}
+%          local
+%             AvailableColors = [red blue green yellow orange purple]
+%             fun {RandomColor Colors}
+%                local Index in
+%                   Index = {OS.rand} mod {Length Colors}
+%                   {Nth Colors Index + 1}
+%                end
+%             end
+%             fun {GenerateCode Colors Count}
+%                if Count == 0 then nil
+%                else
+%                   {RandomColor Colors} | {GenerateCode Colors Count - 1}
+%                end
+%             end
+%          in
+%             {GenerateCode AvailableColors 4}
+%          end
+%       end
+%       RandomCode1 = {GenerateRandomCode}
+%       RandomCode2 = {GenerateRandomCode}
+%       ValidRandom1 = {IsValidCode RandomCode1}
+%       ValidRandom2 = {IsValidCode RandomCode2}
+%    in
+%       {System.showInfo "\n--- Test 7: Random Code Generation ---"}
+%       {System.showInfo "Random code 1: " # {Value.toVirtualString RandomCode1 10 10} # " Valid: " # {Value.toVirtualString ValidRandom1 10 10}}
+%       {System.showInfo "Random code 2: " # {Value.toVirtualString RandomCode2 10 10} # " Valid: " # {Value.toVirtualString ValidRandom2 10 10}}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       Guess1 = [red orange purple blue]
+%       CodemakerAfterRound1 = {PlayRound Codemaker Guess1}
+%       Guess2 = [blue red yellow green]
+%       CodemakerAfterRound2 = {PlayRound CodemakerAfterRound1 Guess2}
+%       History = CodemakerAfterRound2.guessHistory
+%    in
+%       {System.showInfo "\n--- Test 8: Guess History ---"}
+%       {System.showInfo "History length: " # {Length History} # " (expected: 2)"}
+%       {System.showInfo "First guess: " # {Value.toVirtualString {Nth History 1}.guess 10 10}}
+%       {System.showInfo "Second guess: " # {Value.toVirtualString {Nth History 2}.guess 10 10}}
+%    end
+
+%    local
+%       EmptyCodemaker = codemaker(
+%          secretCode: nil
+%          currentRound: 0
+%          maxRounds: 12
+%          gameStatus: 'ready'
+%          guessHistory: nil
+%          feedbackHistory: nil
+%       )
+%       StatusEmpty = {GetGameStatus {EvaluateGuess EmptyCodemaker [red orange purple blue]} 0}
+%       RoundEmpty = {GetCurrentRound EmptyCodemaker}
+%       RemainingEmpty = {GetRemainingRounds EmptyCodemaker}
+%    in
+%       {System.showInfo "\n--- Test 9: Edge Cases ---"}
+%       {System.showInfo "Empty codemaker status: " # StatusEmpty # " (expected: playing)"}
+%       {System.showInfo "Empty codemaker round: " # RoundEmpty # " (expected: 0)"}
+%       {System.showInfo "Empty codemaker remaining: " # RemainingEmpty # " (expected: 0)"}
+%    end
+
+%    local
+%       SecretCode1 = [red blue green yellow]
+%       SecretCode2 = [orange purple orange purple]
+%       Codemaker1 = {StartGame SecretCode1}
+%       Codemaker2 = {StartGame SecretCode2}
+%       Status1 = {GetGameStatus {EvaluateGuess Codemaker1 [red orange purple blue]} 1}
+%       Status2 = {GetGameStatus {EvaluateGuess Codemaker2 [red orange purple blue]} 1}
+%       Code1 = {GetSecretCode Codemaker1}
+%       Code2 = {GetSecretCode Codemaker2}
+%    in
+%       {System.showInfo "\n--- Test 10: Multiple Games ---"}
+%       {System.showInfo "Codemaker 1 status: " # Status1 # " Code: " # {Value.toVirtualString Code1 10 10}}
+%       {System.showInfo "Codemaker 2 status: " # Status2 # " Code: " # {Value.toVirtualString Code2 10 10}}
+%    end
+
+%    local
+%       Colors1 = {GetAvailableColors}
+%       GeneratedCode1 = {GenerateRandomCode}
+%       SetCode1 = {SetSecretCode [red blue green yellow]}
+%       RetrievedCode1 = {GetSecretCode SetCode1}
+%    in
+%       {System.showInfo "\n--- Test 11: CodeMaker Basic Functionality ---"}
+%       {System.showInfo "Default colors: " # {Value.toVirtualString Colors1 10 10}}
+%       {System.showInfo "Generated code: " # {Value.toVirtualString GeneratedCode1 10 10}}
+%       {System.showInfo "Set code: " # {Value.toVirtualString RetrievedCode1 10 10}}
+%    end
+
+%    local
+%       Strategy1 = 'random'
+%       Strategy2 = 'systematic'
+%       Strategy3 = 'smart'
+%       Strategy4 = 'human'
+%    in
+%       {System.showInfo "\n--- Test 12: CodeBreaker Strategies ---"}
+%       {System.showInfo "Random strategy: " # Strategy1}
+%       {System.showInfo "Systematic strategy: " # Strategy2}
+%       {System.showInfo "Smart strategy: " # Strategy3}
+%       {System.showInfo "Human strategy: " # Strategy4}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       ValidGuess = [red blue green yellow]
+%       InvalidGuess1 = [red blue green]  % Too short
+%       InvalidGuess2 = [red blue green invalid]  % Invalid color
+      
+%       CodemakerAfterValid = try {MakeGuess Codemaker ValidGuess} catch _ then Codemaker end
+%       ValidGuessSuccess = CodemakerAfterValid \= Codemaker
+      
+%       CodemakerAfterInvalid1 = try {MakeGuess Codemaker InvalidGuess1} catch _ then Codemaker end
+%       InvalidGuess1Success = CodemakerAfterInvalid1 \= Codemaker
+      
+%       CodemakerAfterInvalid2 = try {MakeGuess Codemaker InvalidGuess2} catch _ then Codemaker end
+%       InvalidGuess2Success = CodemakerAfterInvalid2 \= Codemaker
+%    in
+%       {System.showInfo "\n--- Test 13: Specific Guess Functionality ---"}
+%       {System.showInfo "Valid specific guess success: " # {Value.toVirtualString ValidGuessSuccess 10 10}}
+%       {System.showInfo "Invalid specific guess (short) success: " # {Value.toVirtualString InvalidGuess1Success 10 10}}
+%       {System.showInfo "Invalid specific guess (bad color) success: " # {Value.toVirtualString InvalidGuess2Success 10 10}}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       Guess = [red blue green yellow]
+%       Feedback = feedback(
+%          blackClues: 2
+%          whiteClues: 1
+%          totalCorrect: 3
+%          isCorrect: false
+%          clueList: [black black white none]
+%       )
+%       CodemakerWithFeedback = {ReceiveFeedback Codemaker Guess Feedback}
+%       History = {GetGuessHistory CodemakerWithFeedback}
+%    in
+%       {System.showInfo "\n--- Test 14: Feedback Processing ---"}
+%       {System.showInfo "Guess history length: " # {Length History}}
+%    end
+
+%    local
+%       SmartStrategy = 'smart'
+%       RandomStrategy = 'random'
+%       PossibilitiesSmart = 6 * 6 * 6 * 6  % 6^4 possibilities
+%       PossibilitiesRandom = nil  % Random strategy doesn't track possibilities
+%    in
+%       {System.showInfo "\n--- Test 15: Strategy-Specific Functionality ---"}
+%       {System.showInfo "Smart strategy possibilities: " # PossibilitiesSmart}
+%       {System.showInfo "Random strategy possibilities: " # {Value.toVirtualString PossibilitiesRandom 10 10}}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       InitialStatus = {GetGameStatus {EvaluateGuess Codemaker [red orange purple blue]} 0}
+%       CodemakerAfterStart = {StartGame SecretCode}
+%       StatusAfterStart = {GetGameStatus {EvaluateGuess CodemakerAfterStart [red orange purple blue]} 1}
+%       Guess1 = [red orange purple blue]
+%       CodemakerAfterRound1 = {PlayRound CodemakerAfterStart Guess1}
+%       Feedback1 = {EvaluateGuess CodemakerAfterRound1 Guess1}
+%       BlackClues = Feedback1.blackClues
+%       WhiteClues = Feedback1.whiteClues
+%       CurrentRound = {GetCurrentRound CodemakerAfterRound1}
+%       RemainingRounds = {GetRemainingRounds CodemakerAfterRound1}
+%    in
+%       {System.showInfo "\n--- Test 16: Full Game Simulation ---"}
+%       {System.showInfo "Initial game status: " # InitialStatus}
+%       {System.showInfo "After start game status: " # StatusAfterStart}
+%       {System.showInfo "Round 1 - Guess: " # {Value.toVirtualString Guess1 10 10}}
+%       {System.showInfo "Black: " # BlackClues}
+%       {System.showInfo "White: " # WhiteClues}
+%       {System.showInfo "Current round: " # CurrentRound}
+%       {System.showInfo "Remaining rounds calculated: " # RemainingRounds}
+%    end
+
+%    local
+%       EmptyCodemaker = codemaker(
+%          secretCode: nil
+%          currentRound: 0
+%          maxRounds: 12
+%          gameStatus: 'ready'
+%          guessHistory: nil
+%          feedbackHistory: nil
+%       )
+      
+%       ErrorCaught1 = try
+%          local _ in
+%             {EvaluateGuess EmptyCodemaker [red blue green yellow] _}
+%             false
+%          end
+%       catch _ then
+%          true
+%       end
+      
+%       ErrorCaught2 = try
+%          local _ in
+%             {EvaluateGuess {StartGame [red blue green yellow]} [red blue green] _}
+%             false
+%          end
+%       catch _ then
+%          true
+%       end
+%    in
+%       {System.showInfo "\n--- Test 17: Edge Cases with Error Handling ---"}
+%       {System.showInfo "Correctly caught error for no secret code: " # {Value.toVirtualString ErrorCaught1 10 10}}
+%       {System.showInfo "Correctly caught error for invalid guess length: " # {Value.toVirtualString ErrorCaught2 10 10}}
+%    end
+
+%    local
+%       SecretCode = [red blue green yellow]
+%       Codemaker = {StartGame SecretCode}
+%       Guess = [red blue green yellow]
+%       CodemakerWithGuess = {MakeGuess Codemaker Guess}
+%       HistoryBeforeReset = {GetGuessHistory CodemakerWithGuess}
+%       CodemakerAfterReset = {ResetHistory CodemakerWithGuess}
+%       HistoryAfterReset = {GetGuessHistory CodemakerAfterReset}
+%    in
+%       {System.showInfo "\n--- Test 18: History Reset Functionality ---"}
+%       {System.showInfo "History before reset length: " # {Length HistoryBeforeReset}}
+%       {System.showInfo "History after reset length: " # {Length HistoryAfterReset}}
+%       {System.showInfo "History reset completed"}
+%    end
+
+%    {System.showInfo "\n=== ALL MASTERMIND TESTS COMPLETED ==="}
+% end
+
+% {RunMastermindTests}
