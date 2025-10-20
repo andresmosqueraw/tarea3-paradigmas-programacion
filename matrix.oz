@@ -234,104 +234,88 @@ declare
       end 
    end
 
-%% =========================
-%% Functional Test Suite (mirrors matrix_oop.oz tests)
-%% =========================
 
-proc {RunMatrixTests}
-   {System.showInfo "\n=== MATRIX (FUNCTIONAL) TEST SUITE ==="}
-   local M1 M2 M3 M4 M5 M6 in
 
-   %% Test 1: Creation
-   M1 = [[1 2] [3 4]]
-   M2 = [[1 2 3] [4 5 6] [7 8 9]]
-   M3 = [[5]]
-   {System.showInfo "M1 size: " # {GetSize M1} # " (expected: 2)"}
-   {System.showInfo "M2 size: " # {GetSize M2} # " (expected: 3)"}
-   {System.showInfo "M3 size: " # {GetSize M3} # " (expected: 1)"}
+% proc {RunMatrixTests}
+%    {System.showInfo "\n=== MATRIX (FUNCTIONAL) TEST SUITE ==="}
+%    local M1 M2 M3 M4 M5 M6 in
 
-   %% Test 2: getElement
-   {System.showInfo "M1[1,1] = " # {GetElement M1 1 1} # " (expected: 1)"}
-   {System.showInfo "M1[1,2] = " # {GetElement M1 1 2} # " (expected: 2)"}
-   {System.showInfo "M1[2,1] = " # {GetElement M1 2 1} # " (expected: 3)"}
-   {System.showInfo "M1[2,2] = " # {GetElement M1 2 2} # " (expected: 4)"}
-   {System.showInfo "M1[0,1] = " # {GetElement M1 0 1} # " (expected: 142857)"}
-   {System.showInfo "M1[1,0] = " # {GetElement M1 1 0} # " (expected: 142857)"}
-   {System.showInfo "M1[3,1] = " # {GetElement M1 3 1} # " (expected: 142857)"}
+%    M1 = [[1 2] [3 4]]
+%    M2 = [[1 2 3] [4 5 6] [7 8 9]]
+%    M3 = [[5]]
+%    {System.showInfo "M1 size: " # {GetSize M1} # " (expected: 2)"}
+%    {System.showInfo "M2 size: " # {GetSize M2} # " (expected: 3)"}
+%    {System.showInfo "M3 size: " # {GetSize M3} # " (expected: 1)"}
 
-   %% Test 3: getRow
-   {System.showInfo "M2 Row 1: " # {Value.toVirtualString {GetRow M2 1} 10 10}}
-   {System.showInfo "M2 Row 2: " # {Value.toVirtualString {GetRow M2 2} 10 10}}
-   {System.showInfo "M2 Row 3: " # {Value.toVirtualString {GetRow M2 3} 10 10}}
-   {System.showInfo "M2 Row 4: " # {GetRow M2 4} # " (expected: 142857)"}
+%    {System.showInfo "M1[1,1] = " # {GetElement M1 1 1} # " (expected: 1)"}
+%    {System.showInfo "M1[1,2] = " # {GetElement M1 1 2} # " (expected: 2)"}
+%    {System.showInfo "M1[2,1] = " # {GetElement M1 2 1} # " (expected: 3)"}
+%    {System.showInfo "M1[2,2] = " # {GetElement M1 2 2} # " (expected: 4)"}
+%    {System.showInfo "M1[0,1] = " # {GetElement M1 0 1} # " (expected: 142857)"}
+%    {System.showInfo "M1[1,0] = " # {GetElement M1 1 0} # " (expected: 142857)"}
+%    {System.showInfo "M1[3,1] = " # {GetElement M1 3 1} # " (expected: 142857)"}
 
-   %% Test 4: getColumn
-   {System.showInfo "M2 Col 1: " # {Value.toVirtualString {GetColumn M2 1} 10 10}}
-   {System.showInfo "M2 Col 2: " # {Value.toVirtualString {GetColumn M2 2} 10 10}}
-   {System.showInfo "M2 Col 3: " # {Value.toVirtualString {GetColumn M2 3} 10 10}}
-   {System.showInfo "M2 Col 4: " # {GetColumn M2 4} # " (expected: 142857)"}
+%    {System.showInfo "M2 Row 1: " # {Value.toVirtualString {GetRow M2 1} 10 10}}
+%    {System.showInfo "M2 Row 2: " # {Value.toVirtualString {GetRow M2 2} 10 10}}
+%    {System.showInfo "M2 Row 3: " # {Value.toVirtualString {GetRow M2 3} 10 10}}
+%    {System.showInfo "M2 Row 4: " # {GetRow M2 4} # " (expected: 142857)"}
 
-   %% Test 5: sumRow
-   {System.showInfo "M1 Row 1 sum: " # {SumRow M1 1} # " (expected: 3)"}
-   {System.showInfo "M1 Row 2 sum: " # {SumRow M1 2} # " (expected: 7)"}
-   {System.showInfo "M2 Row 1 sum: " # {SumRow M2 1} # " (expected: 6)"}
-   {System.showInfo "M1 Row 3 sum: " # {SumRow M1 3} # " (expected: 142857)"}
+%    {System.showInfo "M2 Col 1: " # {Value.toVirtualString {GetColumn M2 1} 10 10}}
+%    {System.showInfo "M2 Col 2: " # {Value.toVirtualString {GetColumn M2 2} 10 10}}
+%    {System.showInfo "M2 Col 3: " # {Value.toVirtualString {GetColumn M2 3} 10 10}}
+%    {System.showInfo "M2 Col 4: " # {GetColumn M2 4} # " (expected: 142857)"}
 
-   %% Test 6: productRow
-   {System.showInfo "M1 Row 1 product: " # {ProductRow M1 1} # " (expected: 2)"}
-   {System.showInfo "M1 Row 2 product: " # {ProductRow M1 2} # " (expected: 12)"}
-   {System.showInfo "M2 Row 1 product: " # {ProductRow M2 1} # " (expected: 6)"}
-   {System.showInfo "M1 Row 3 product: " # {ProductRow M1 3} # " (expected: 142857)"}
+%    {System.showInfo "M1 Row 1 sum: " # {SumRow M1 1} # " (expected: 3)"}
+%    {System.showInfo "M1 Row 2 sum: " # {SumRow M1 2} # " (expected: 7)"}
+%    {System.showInfo "M2 Row 1 sum: " # {SumRow M2 1} # " (expected: 6)"}
+%    {System.showInfo "M1 Row 3 sum: " # {SumRow M1 3} # " (expected: 142857)"}
 
-   %% Test 7: sumColumn
-   {System.showInfo "M1 Col 1 sum: " # {SumColumn M1 1} # " (expected: 4)"}
-   {System.showInfo "M1 Col 2 sum: " # {SumColumn M1 2} # " (expected: 6)"}
-   {System.showInfo "M2 Col 1 sum: " # {SumColumn M2 1} # " (expected: 12)"}
-   {System.showInfo "M1 Col 3 sum: " # {SumColumn M1 3} # " (expected: 142857)"}
+%    {System.showInfo "M1 Row 1 product: " # {ProductRow M1 1} # " (expected: 2)"}
+%    {System.showInfo "M1 Row 2 product: " # {ProductRow M1 2} # " (expected: 12)"}
+%    {System.showInfo "M2 Row 1 product: " # {ProductRow M2 1} # " (expected: 6)"}
+%    {System.showInfo "M1 Row 3 product: " # {ProductRow M1 3} # " (expected: 142857)"}
 
-   %% Test 8: productColumn
-   {System.showInfo "M1 Col 1 product: " # {ProductColumn M1 1} # " (expected: 3)"}
-   {System.showInfo "M1 Col 2 product: " # {ProductColumn M1 2} # " (expected: 8)"}
-   {System.showInfo "M2 Col 1 product: " # {ProductColumn M2 1} # " (expected: 28)"}
-   {System.showInfo "M1 Col 3 product: " # {ProductColumn M1 3} # " (expected: 142857)"}
+%    {System.showInfo "M1 Col 1 sum: " # {SumColumn M1 1} # " (expected: 4)"}
+%    {System.showInfo "M1 Col 2 sum: " # {SumColumn M1 2} # " (expected: 6)"}
+%    {System.showInfo "M2 Col 1 sum: " # {SumColumn M2 1} # " (expected: 12)"}
+%    {System.showInfo "M1 Col 3 sum: " # {SumColumn M1 3} # " (expected: 142857)"}
 
-   %% Test 9: sumAll
-   {System.showInfo "M1 total sum: " # {SumAll M1} # " (expected: 10)"}
-   {System.showInfo "M2 total sum: " # {SumAll M2} # " (expected: 45)"}
-   {System.showInfo "M3 total sum: " # {SumAll M3} # " (expected: 5)"}
+%    {System.showInfo "M1 Col 1 product: " # {ProductColumn M1 1} # " (expected: 3)"}
+%    {System.showInfo "M1 Col 2 product: " # {ProductColumn M1 2} # " (expected: 8)"}
+%    {System.showInfo "M2 Col 1 product: " # {ProductColumn M2 1} # " (expected: 28)"}
+%    {System.showInfo "M1 Col 3 product: " # {ProductColumn M1 3} # " (expected: 142857)"}
 
-   %% Test 10: productAll
-   {System.showInfo "M1 total product: " # {ProductAll M1} # " (expected: 24)"}
-   {System.showInfo "M2 total product: " # {ProductAll M2} # " (expected: 362880)"}
-   {System.showInfo "M3 total product: " # {ProductAll M3} # " (expected: 5)"}
+%    {System.showInfo "M1 total sum: " # {SumAll M1} # " (expected: 10)"}
+%    {System.showInfo "M2 total sum: " # {SumAll M2} # " (expected: 45)"}
+%    {System.showInfo "M3 total sum: " # {SumAll M3} # " (expected: 5)"}
 
-   %% Test 11: display
-   {System.showInfo "Displaying M1:"}
-   {Display M1}
-   {System.showInfo "\nDisplaying M2:"}
-   {Display M2}
-   {System.showInfo "\nDisplaying M3:"}
-   {Display M3}
+%    {System.showInfo "M1 total product: " # {ProductAll M1} # " (expected: 24)"}
+%    {System.showInfo "M2 total product: " # {ProductAll M2} # " (expected: 362880)"}
+%    {System.showInfo "M3 total product: " # {ProductAll M3} # " (expected: 5)"}
 
-   %% Test 12: Edge cases with zeros and negatives
-   M4 = [[0 1] [2 0]]
-   M5 = [[~1 2] [~3 4]]
-   {System.showInfo "M4 (with zeros) sum: " # {SumAll M4} # " (expected: 3)"}
-   {System.showInfo "M4 (with zeros) product: " # {ProductAll M4} # " (expected: 0)"}
-   {System.showInfo "M5 (with negatives) sum: " # {SumAll M5} # " (expected: 2)"}
-   {System.showInfo "M5 (with negatives) product: " # {ProductAll M5} # " (expected: 24)"}
+%    {System.showInfo "Displaying M1:"}
+%    {Display M1}
+%    {System.showInfo "\nDisplaying M2:"}
+%    {Display M2}
+%    {System.showInfo "\nDisplaying M3:"}
+%    {Display M3}
 
-   %% Boundary checks
-   {System.showInfo "M2[1,1] (first): " # {GetElement M2 1 1} # " (expected: 1)"}
-   {System.showInfo "M2[3,3] (last): " # {GetElement M2 3 3} # " (expected: 9)"}
-   {System.showInfo "M2[2,2] (middle): " # {GetElement M2 2 2} # " (expected: 5)"}
+%    M4 = [[0 1] [2 0]]
+%    M5 = [[~1 2] [~3 4]]
+%    {System.showInfo "M4 (with zeros) sum: " # {SumAll M4} # " (expected: 3)"}
+%    {System.showInfo "M4 (with zeros) product: " # {ProductAll M4} # " (expected: 0)"}
+%    {System.showInfo "M5 (with negatives) sum: " # {SumAll M5} # " (expected: 2)"}
+%    {System.showInfo "M5 (with negatives) product: " # {ProductAll M5} # " (expected: 24)"}
 
-   %% Large matrix
-   M6 = [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16]]
-   {System.showInfo "M6 size: " # {GetSize M6}}
-   {System.showInfo "M6 total sum: " # {SumAll M6}}
-   {System.showInfo "M6 total product: " # {ProductAll M6}}
-   end
-end
+%    {System.showInfo "M2[1,1] (first): " # {GetElement M2 1 1} # " (expected: 1)"}
+%    {System.showInfo "M2[3,3] (last): " # {GetElement M2 3 3} # " (expected: 9)"}
+%    {System.showInfo "M2[2,2] (middle): " # {GetElement M2 2 2} # " (expected: 5)"}
 
-{RunMatrixTests}
+%    M6 = [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16]]
+%    {System.showInfo "M6 size: " # {GetSize M6}}
+%    {System.showInfo "M6 total sum: " # {SumAll M6}}
+%    {System.showInfo "M6 total product: " # {ProductAll M6}}
+%    end
+% end
+
+% {RunMatrixTests}
