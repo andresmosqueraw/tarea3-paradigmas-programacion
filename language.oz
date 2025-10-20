@@ -10,8 +10,8 @@ declare
 % PRINT FUNCTIONS
 % ===========================================
 
-% ExpPrint : Int -> Unit
-proc {ExpPrint I}
+% PrintNum : Int -> Unit
+proc {PrintNum I}
     {System.showInfo I}
 end
 
@@ -39,8 +39,8 @@ end
 % EVALUATION FUNCTIONS
 % ===========================================
 
-% ExpEval : Int -> Int
-fun {ExpEval num I}
+% EvalNum : Int -> Int
+fun {EvalNum I}
     I
 end
 
@@ -147,8 +147,8 @@ fun {GetTensWord N}
     end
 end
 
-% ExpToString : Int -> String
-fun {ExpToString num I}
+% ToStringNum : Int -> String
+fun {ToStringNum I}
     {NumberToWord I}
 end
 
@@ -186,7 +186,7 @@ end
 % EvalExpression : Expression -> Int
 fun {EvalExpression Expr}
     case Expr of num(I) then
-        {ExpEval num I}
+        {EvalNum I}
     [] sum(Left Right) then
         {EvalSum {EvalExpression Left} {EvalExpression Right}}
     [] difference(Left Right) then
@@ -205,7 +205,7 @@ end
 % PrintExpression : Expression -> Unit
 proc {PrintExpression Expr}
     case Expr of num(I) then
-        {ExpPrint I}
+        {PrintNum I}
     [] sum(Left Right) then
         {PrintSum {EvalExpression Left} {EvalExpression Right}}
     [] difference(Left Right) then
@@ -224,7 +224,7 @@ end
 % ToStringExpression : Expression -> String
 fun {ToStringExpression Expr}
     case Expr of num(I) then
-        {ExpToString num I}
+        {ToStringNum I}
     [] sum(Left Right) then
         {ToStringSum {EvalExpression Left} {EvalExpression Right}}
     [] difference(Left Right) then
