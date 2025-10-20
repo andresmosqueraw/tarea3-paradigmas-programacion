@@ -15,15 +15,24 @@ proc {ExpPrint I}
     {System.showInfo I}
 end
 
-% Print : atom Int Int -> Unit
-% Usage: {Print sum 3 4} {Print difference 7 2} {Print multiplication 3 4} {Print modulo 7 2}
-proc {Print Op Left Right}
-    case Op
-    of sum then {System.showInfo Left # " + " # Right}
-    [] difference then {System.showInfo Left # " - " # Right}
-    [] multiplication then {System.showInfo Left # " * " # Right}
-    [] modulo then {System.showInfo Left # " mod " # Right}
-    end
+% PrintSum : Int Int -> Unit
+proc {PrintSum Left Right}
+    {System.showInfo Left # " + " # Right}
+end
+
+% PrintDifference : Int Int -> Unit
+proc {PrintDifference Left Right}
+    {System.showInfo Left # " - " # Right}
+end
+
+% PrintMultiplication : Int Int -> Unit
+proc {PrintMultiplication Left Right}
+    {System.showInfo Left # " * " # Right}
+end
+
+% PrintModulo : Int Int -> Unit
+proc {PrintModulo Left Right}
+    {System.showInfo Left # " mod " # Right}
 end
 
 % ===========================================
@@ -35,15 +44,24 @@ fun {ExpEval num I}
     I
 end
 
-% Eval : atom Int Int -> Int
-% Usage: {Eval sum 3 4} {Eval difference 7 2} {Eval multiplication 3 4} {Eval modulo 7 2}
-fun {Eval Op Left Right}
-    case Op
-    of sum then Left + Right
-    [] difference then Left - Right
-    [] multiplication then Left * Right
-    [] modulo then Left mod Right
-    end
+% EvalSum : Int Int -> Int
+fun {EvalSum Left Right}
+    Left + Right
+end
+
+% EvalDifference : Int Int -> Int
+fun {EvalDifference Left Right}
+    Left - Right
+end
+
+% EvalMultiplication : Int Int -> Int
+fun {EvalMultiplication Left Right}
+    Left * Right
+end
+
+% EvalModulo : Int Int -> Int
+fun {EvalModulo Left Right}
+    Left mod Right
 end
 
 % ===========================================
@@ -134,13 +152,24 @@ fun {ExpToString num I}
     {NumberToWord I}
 end
 
-fun {ToString Op Left Right}
-    case Op
-    of sum then {NumberToWord Left} # " plus " # {NumberToWord Right}
-    [] difference then {NumberToWord Left} # " minus " # {NumberToWord Right}
-    [] multiplication then {NumberToWord Left} # " times " # {NumberToWord Right}
-    [] modulo then {NumberToWord Left} # " modulo " # {NumberToWord Right}
-    end
+% ToStringSum : Int Int -> String
+fun {ToStringSum Left Right}
+    {NumberToWord Left} # " plus " # {NumberToWord Right}
+end
+
+% ToStringDifference : Int Int -> String
+fun {ToStringDifference Left Right}
+    {NumberToWord Left} # " minus " # {NumberToWord Right}
+end
+
+% ToStringMultiplication : Int Int -> String
+fun {ToStringMultiplication Left Right}
+    {NumberToWord Left} # " times " # {NumberToWord Right}
+end
+
+% ToStringModulo : Int Int -> String
+fun {ToStringModulo Left Right}
+    {NumberToWord Left} # " modulo " # {NumberToWord Right}
 end
 
 % ===========================================
@@ -159,13 +188,13 @@ fun {EvalExpression Expr}
     case Expr of num(I) then
         {ExpEval num I}
     [] sum(Left Right) then
-        {Eval sum {EvalExpression Left} {EvalExpression Right}}
+        {EvalSum {EvalExpression Left} {EvalExpression Right}}
     [] difference(Left Right) then
-        {Eval difference {EvalExpression Left} {EvalExpression Right}}
+        {EvalDifference {EvalExpression Left} {EvalExpression Right}}
     [] multiplication(Left Right) then
-        {Eval multiplication {EvalExpression Left} {EvalExpression Right}}
+        {EvalMultiplication {EvalExpression Left} {EvalExpression Right}}
     [] modulo(Left Right) then
-        {Eval modulo {EvalExpression Left} {EvalExpression Right}}
+        {EvalModulo {EvalExpression Left} {EvalExpression Right}}
     end
 end
 
@@ -178,13 +207,13 @@ proc {PrintExpression Expr}
     case Expr of num(I) then
         {ExpPrint I}
     [] sum(Left Right) then
-        {Print sum {EvalExpression Left} {EvalExpression Right}}
+        {PrintSum {EvalExpression Left} {EvalExpression Right}}
     [] difference(Left Right) then
-        {Print difference {EvalExpression Left} {EvalExpression Right}}
+        {PrintDifference {EvalExpression Left} {EvalExpression Right}}
     [] multiplication(Left Right) then
-        {Print multiplication {EvalExpression Left} {EvalExpression Right}}
+        {PrintMultiplication {EvalExpression Left} {EvalExpression Right}}
     [] modulo(Left Right) then
-        {Print modulo {EvalExpression Left} {EvalExpression Right}}
+        {PrintModulo {EvalExpression Left} {EvalExpression Right}}
     end
 end
 
@@ -197,13 +226,13 @@ fun {ToStringExpression Expr}
     case Expr of num(I) then
         {ExpToString num I}
     [] sum(Left Right) then
-        {ToString sum {EvalExpression Left} {EvalExpression Right}}
+        {ToStringSum {EvalExpression Left} {EvalExpression Right}}
     [] difference(Left Right) then
-        {ToString difference {EvalExpression Left} {EvalExpression Right}}
+        {ToStringDifference {EvalExpression Left} {EvalExpression Right}}
     [] multiplication(Left Right) then
-        {ToString multiplication {EvalExpression Left} {EvalExpression Right}}
+        {ToStringMultiplication {EvalExpression Left} {EvalExpression Right}}
     [] modulo(Left Right) then
-        {ToString modulo {EvalExpression Left} {EvalExpression Right}}
+        {ToStringModulo {EvalExpression Left} {EvalExpression Right}}
     end
 end
 
